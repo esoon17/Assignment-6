@@ -1,0 +1,147 @@
+import java.util.ArrayList;
+
+public class BevShop implements BevShopInterfce{
+	
+	//Instance variables 
+    private int numAlcohol;
+    private int currentOrder;
+    private ArrayList<Order> orders;
+    private final int MIN_AGE_FOR_ALCOHOL = 21;
+	
+    //Instance list to keep track of orders
+    public BevShop() {
+        orders = new ArrayList<>();
+    }
+
+    public String toString() {
+        String s = ""+totalMonthlySale();
+    	for (Order o : orders) {
+                s += o.toString();
+        }        
+        return s;
+    }
+    
+    //Additional methods
+    public boolean validTime(int time) {
+        if (time >= MIN_TIME && time <= MAX_TIME) {
+                return true;
+        }
+        return false;
+    }
+    
+    public boolean validAge(int a) {
+        if (a > MIN_AGE_FOR_ALCOHOL) {
+                return true;
+        }
+        return false;
+    }
+    
+    public boolean eligibleForMore() {
+        if (numAlcohol < 3) {
+                return true;
+        }
+        return false;
+    }
+    
+    public boolean isMaxFruit(int num) {
+        if (num > MAX_FRUIT) {
+                return true;
+        }
+        return false;
+    }
+
+    public void startNewOrder(int time, DAY day, String customerName, int customerAge) {
+        Customer customer = new Customer(customerName, customerAge);
+        Order order = new Order(time, day, customer);
+        orders.add(order);
+        currentOrder = orders.indexOf(order);
+        numAlcohol = 0;
+    }
+    
+    public void processCoffeeOrder(String bevName, SIZE size, boolean extraShot, boolean extraSyrup) {
+        orders.get(currentOrder).addNewBeverage(bevName, size, extraShot, extraSyrup);
+    }
+    
+    public void processSmoothieOrder(String bevName, SIZE size, int numOfFruits, boolean addProtein) {
+        orders.get(currentOrder).addNewBeverage(bevName, size, numOfFruits, addProtein);
+    }
+    
+    public void processAlcoholOrder(String bevName, SIZE size) {
+        orders.get(currentOrder).addNewBeverage(bevName, size);
+        numAlcohol++;
+    }
+
+    public int findOrder(int orderNo) {
+    	for (int i = 0; i < orders.size(); i++) {
+    		if (orders.get(i).getOrderNo() == orderNo) {
+    			return i;
+    		}
+    	}
+        return -1;
+    }
+    
+    public double totalOrderPrice(int orderNo) {
+        double orderSale = 0;
+        for (Order o : orders) {
+        	if (o.getOrderNo() == orderNo) {
+        		for (Beverage b : o.getBeverages()) {
+        			orderSale += b.calcPrice();
+        		}
+        	}
+        }
+        return orderSale;
+    }
+    
+    public double totalMonthlySale() {
+        double totalSale = 0;
+        for (Order o : orders) {
+        	for (Beverage b : o.getBeverages()) {
+        		totalSale += b.calcPrice();
+                }
+        }
+        return totalSale;
+    }
+    
+    public int totalNumOfMonthlyOrders() {
+        return orders.size();
+    }
+    
+    public void sortOrders()
+    {
+        for(int i = 0; i < orders.size() - 1; i++)
+        {
+            int leastTemp = orders.get(i).getOrderNo();
+            for(int j = i+1; j < orders.size(); j++)
+            {
+                if(orders.get(j).getOrderNo() < leastTemp)
+                {
+                    Order orderTemp = orders.get(j);
+                    orders.set(j, orders.get(i));
+                    orders.set(i, orderTemp);
+                }
+            }
+        }
+    }
+    
+    //Getters and Setters
+	public Order getOrderAtIndex(int index) {
+    	return orders.get(index);
+    }
+
+	public Order getCurrentOrder() {
+		return orders.get(currentOrder);
+    }
+    
+	public int getNumOfAlcoholDrink() {
+		return numAlcohol;
+    }
+    
+	public int getMaxOrderForAlcohol() {
+		return MAX_ORDER_FOR_ALCOHOL;
+    }
+    
+	public int getMinAgeForAlcohol() {
+		return MIN_AGE_FOR_ALCOHOL;
+    }
+
+}
